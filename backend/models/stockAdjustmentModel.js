@@ -21,6 +21,14 @@ const stockAdjustmentSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+     previousStock: {
+      type: Number,
+      required: true,
+    },
+     updatedStock: {
+      type: Number,
+      required: true,
+    },
     reason: {
       type: String,
       enum: ['damaged', 'expired', 'lost', 'found', 'inventory_count', 'other'],

@@ -86,8 +86,8 @@ function StockAdjustment() {
   const [warehouses, setWarehouses] = useState([]);
   const [form, setForm] = useState({
     sku: '',
-    adjustmentType: 'increase',
-    quantity: 1,
+    adjustmentType: '',
+    quantity: '',
     reason: '',
     notes: '',
   });
@@ -110,11 +110,10 @@ function StockAdjustment() {
     try {
       setLoading(true);
       const [skusRes, adjustmentsRes] = await Promise.all([
-        axios.get('/api/skus'),
+        axios.get('/api/skus',{ params: { limit: 1000 } }),
         axios.get('/api/stock-adjustments', {
           params: {
             page: page + 1,
-            limit: rowsPerPage,
             sortBy,
             sortOrder,
             ...filters,
@@ -344,78 +343,78 @@ function StockAdjustment() {
 
       <TableContainer component={Paper}>
         <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === 'createdAt'}
-                  direction={sortOrder}
-                  onClick={() => handleSort('createdAt')}
-                >
-                  Date
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === 'sku.name'}
-                  direction={sortOrder}
-                  onClick={() => handleSort('sku.name')}
-                >
-                  SKU
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell>
-                <TableSortLabel
-                  active={sortBy === 'quantity'}
-                  direction={sortOrder}
-                  onClick={() => handleSort('quantity')}
-                >
-                  Quantity
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>Previous Stock</TableCell>
-              <TableCell>Current Stock</TableCell>
-              <TableCell>Reason</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : adjustments.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center">
-                  No adjustments found
-                </TableCell>
-              </TableRow>
-            ) : (
-              adjustments.map((adjustment) => (
-                <TableRow key={adjustment._id}>
-                  <TableCell>{new Date(adjustment.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>{adjustment.sku.name}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={adjustment.adjustmentType}
-                      color={adjustment.adjustmentType === 'increase' ? 'success' : 'error'}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>{adjustment.quantity}</TableCell>
-                  <TableCell>{adjustment.previousStock}</TableCell>
-                  <TableCell>{adjustment.sku.currentStock}</TableCell>
-                  <TableCell>{adjustment.reason}</TableCell>
-                  <TableCell>
-                    <Chip label={adjustment.status} color="primary" size="small" />
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
+         <TableHead>
+  <TableRow>
+    <TableCell>
+      <TableSortLabel
+        active={sortBy === 'createdAt'}
+        direction={sortOrder}
+        onClick={() => handleSort('createdAt')}
+      >
+        Date
+      </TableSortLabel>
+    </TableCell>
+    <TableCell>
+      <TableSortLabel
+        active={sortBy === 'sku.name'}
+        direction={sortOrder}
+        onClick={() => handleSort('sku.name')}
+      >
+        SKU
+      </TableSortLabel>
+    </TableCell>
+    <TableCell>Type</TableCell>
+    <TableCell>
+      <TableSortLabel
+        active={sortBy === 'quantity'}
+        direction={sortOrder}
+        onClick={() => handleSort('quantity')}
+      >
+        Quantity
+      </TableSortLabel>
+    </TableCell>
+    <TableCell>Previous Stock</TableCell>
+    <TableCell>Updated Stock</TableCell>
+    <TableCell>Current Stock</TableCell> {/* Add this */}
+    <TableCell>Reason</TableCell>
+    <TableCell>Notes</TableCell>
+  </TableRow>
+</TableHead>
+<TableBody>
+  {loading ? (
+    <TableRow>
+      <TableCell colSpan={9} align="center">
+        Loading...
+      </TableCell>
+    </TableRow>
+  ) : adjustments.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={9} align="center">
+        No adjustments found
+      </TableCell>
+    </TableRow>
+  ) : (
+    adjustments.map((adjustment) => (
+      <TableRow key={adjustment._id}>
+        <TableCell>{new Date(adjustment.createdAt).toLocaleDateString()}</TableCell>
+        <TableCell>{adjustment.sku.name}</TableCell>
+        <TableCell>
+          <Chip
+            label={adjustment.adjustmentType}
+            color={adjustment.adjustmentType === 'increase' ? 'success' : 'error'}
+            size="small"
+          />
+        </TableCell>
+        <TableCell>{adjustment.quantity}</TableCell>
+        <TableCell>{adjustment.previousStock}</TableCell>
+        <TableCell>{adjustment.updatedStock}</TableCell>
+        <TableCell>{adjustment.sku.currentStock}</TableCell> {/* Add this */}
+        <TableCell>{adjustment.reason}</TableCell>
+        <TableCell>{adjustment.notes}</TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
         </Table>
         <TablePagination
           component="div"

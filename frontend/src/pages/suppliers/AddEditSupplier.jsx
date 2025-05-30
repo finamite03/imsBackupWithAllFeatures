@@ -32,12 +32,15 @@ const validationSchema = yup.object({
   contactPerson: yup.string().required('Contact person is required'),
   email: yup.string().email('Enter a valid email').required('Email is required'),
   phone: yup.string().required('Phone number is required'),
+  alternatePhone: yup.string(),
   address: yup.object({
     street: yup.string().required('Street address is required'),
     city: yup.string().required('City is required'),
     state: yup.string().required('State is required'),
-    zipCode: yup.string().required('ZIP code is required'),
-    country: yup.string().required('Country is required'),
+    pincode: yup
+      .string()
+      .required('Pincode is required')
+      .matches(/^\d{6}$/, 'Pincode must be 6 digits'),
   }),
   taxId: yup.string(),
   paymentTerms: yup.string().required('Payment terms are required'),
@@ -71,17 +74,19 @@ function AddEditSupplier() {
       contactPerson: '',
       email: '',
       phone: '',
+      alternatePhone: '',
       address: {
         street: '',
         city: '',
         state: '',
-        zipCode: '',
-        country: '',
+        pincode: '',
       },
       taxId: '',
       paymentTerms: '',
       leadTime: '',
       status: '',
+      categories: [],
+      notes: '',
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -102,6 +107,32 @@ function AddEditSupplier() {
       }
     },
   });
+
+  // Fetch city/state from pincode
+  useEffect(() => {
+    const fetchCityState = async () => {
+      const pincode = formik.values.address.pincode;
+      if (pincode && pincode.length === 6) {
+        try {
+          const res = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+          const data = await res.json();
+          if (data[0].Status === 'Success') {
+            const postOffice = data[0].PostOffice[0];
+            formik.setFieldValue('address.city', postOffice.District || '');
+            formik.setFieldValue('address.state', postOffice.State || '');
+          } else {
+            formik.setFieldValue('address.city', '');
+            formik.setFieldValue('address.state', '');
+          }
+        } catch {
+          formik.setFieldValue('address.city', '');
+          formik.setFieldValue('address.state', '');
+        }
+      }
+    };
+    fetchCityState();
+    // eslint-disable-next-line
+  }, [formik.values.address.pincode]);
 
   useEffect(() => {
     if (isEdit) {
@@ -144,7 +175,7 @@ function AddEditSupplier() {
         <Divider sx={{ mb: 3 }} />
 
         {error && (
-          <Alert severity="error\" sx={{ mb: 3 }}>
+          <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
         )}
@@ -201,7 +232,7 @@ function AddEditSupplier() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={3}>
               <TextField
                 fullWidth
                 id="phone"
@@ -212,6 +243,20 @@ function AddEditSupplier() {
                 onBlur={formik.handleBlur}
                 error={formik.touched.phone && Boolean(formik.errors.phone)}
                 helperText={formik.touched.phone && formik.errors.phone}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={3}>
+              <TextField
+                fullWidth
+                id="alternatePhone"
+                name="alternatePhone"
+                label="Alternate Contact Number"
+                value={formik.values.alternatePhone}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.alternatePhone && Boolean(formik.errors.alternatePhone)}
+                helperText={formik.touched.alternatePhone && formik.errors.alternatePhone}
               />
             </Grid>
 
@@ -237,7 +282,26 @@ function AddEditSupplier() {
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                fullWidth
+                id="address.pincode"
+                name="address.pincode"
+                label="Pincode"
+                placeholder="000000"
+                value={formik.values.address.pincode}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.address?.pincode && Boolean(formik.errors.address?.pincode)}
+                helperText={
+                  (formik.touched.address?.pincode && formik.errors.address?.pincode) ||
+                  `Digits left: ${6 - (formik.values.address.pincode?.length || 0)}`
+                }
+                inputProps={{ maxLength: 6 }}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 id="address.city"
@@ -248,10 +312,13 @@ function AddEditSupplier() {
                 onBlur={formik.handleBlur}
                 error={formik.touched.address?.city && Boolean(formik.errors.address?.city)}
                 helperText={formik.touched.address?.city && formik.errors.address?.city}
+                InputProps={{
+                  readOnly: true,
+                }}
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 id="address.state"
@@ -262,34 +329,9 @@ function AddEditSupplier() {
                 onBlur={formik.handleBlur}
                 error={formik.touched.address?.state && Boolean(formik.errors.address?.state)}
                 helperText={formik.touched.address?.state && formik.errors.address?.state}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                id="address.zipCode"
-                name="address.zipCode"
-                label="ZIP Code"
-                value={formik.values.address.zipCode}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.address?.zipCode && Boolean(formik.errors.address?.zipCode)}
-                helperText={formik.touched.address?.zipCode && formik.errors.address?.zipCode}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                id="address.country"
-                name="address.country"
-                label="Country"
-                value={formik.values.address.country}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                error={formik.touched.address?.country && Boolean(formik.errors.address?.country)}
-                helperText={formik.touched.address?.country && formik.errors.address?.country}
+                InputProps={{
+                  readOnly: true,
+                }}
               />
             </Grid>
 
@@ -306,7 +348,7 @@ function AddEditSupplier() {
                 fullWidth
                 id="taxId"
                 name="taxId"
-                label="Tax ID"
+                label="GSTIN"
                 value={formik.values.taxId}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -326,9 +368,9 @@ function AddEditSupplier() {
                   onChange={formik.handleChange}
                   label="Payment Terms"
                 >
-                  <MenuItem value="Net 30">Net 30</MenuItem>
-                  <MenuItem value="Net 45">Net 45</MenuItem>
-                  <MenuItem value="Net 60">Net 60</MenuItem>
+                  <MenuItem value="Net 30">30</MenuItem>
+                  <MenuItem value="Net 45">45</MenuItem>
+                  <MenuItem value="Net 60">60</MenuItem>
                   <MenuItem value="Immediate">Immediate</MenuItem>
                 </Select>
               </FormControl>
@@ -339,7 +381,7 @@ function AddEditSupplier() {
                 fullWidth
                 id="leadTime"
                 name="leadTime"
-                label="Lead Time (days)"
+                label="Lead Time (Days)"
                 type="number"
                 value={formik.values.leadTime}
                 onChange={formik.handleChange}

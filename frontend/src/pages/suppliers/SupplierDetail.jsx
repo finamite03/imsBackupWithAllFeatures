@@ -33,6 +33,12 @@ function SupplierDetail() {
       <Typography>Contact: {supplier.contactPerson}</Typography>
       <Typography>Email: {supplier.email}</Typography>
       <Typography>Phone: {supplier.phone}</Typography>
+      <Typography>
+        Alternate Contact Number: {supplier.alternatePhone || 'N/A'}
+      </Typography>
+      <Typography>
+        Address: {supplier.address?.street}, {supplier.address?.city}, {supplier.address?.state} - {supplier.address?.pincode}
+      </Typography>
       {/* Add more fields as needed */}
     </Box>
   );

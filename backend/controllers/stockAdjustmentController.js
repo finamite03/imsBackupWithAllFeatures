@@ -19,34 +19,37 @@ export const createStockAdjustment = asyncHandler(async (req, res) => {
   //   throw new Error('Warehouse is required');
   // }
 
-  // Create adjustment
-  const adjustment = await StockAdjustment.create({
-    sku,
-    // warehouse, // REMOVE
-    adjustmentType,
-    quantity: parseInt(quantity),
-    reason,
-    notes,
-    user: req.user._id,
-    previousStock: skuDoc.currentStock
-  });
-
-  // Update SKU stock using parseInt to ensure integer operations
+  // Calculate updated stock
   const adjustmentQuantity = parseInt(quantity);
   skuDoc.currentStock = parseInt(skuDoc.currentStock);
-  
+
+  let updatedStock;
   if (adjustmentType === 'increase') {
-    skuDoc.currentStock += adjustmentQuantity;
+    updatedStock = skuDoc.currentStock + adjustmentQuantity;
   } else {
-    skuDoc.currentStock -= adjustmentQuantity;
+    updatedStock = skuDoc.currentStock - adjustmentQuantity;
   }
-  
+
   // Validate stock won't go negative
-  if (skuDoc.currentStock < 0) {
+  if (updatedStock < 0) {
     res.status(400);
     throw new Error('Stock cannot be negative');
   }
 
+  // Create adjustment
+  const adjustment = await StockAdjustment.create({
+    sku,
+    adjustmentType,
+    quantity: adjustmentQuantity,
+    reason,
+    notes,
+    user: req.user._id,
+    previousStock: skuDoc.currentStock,
+    updatedStock: updatedStock
+  });
+
+  // Update SKU stock
+  skuDoc.currentStock = updatedStock;
   await skuDoc.save();
 
   // Populate the response
