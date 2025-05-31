@@ -28,7 +28,8 @@ import {
   InputLabel,
   Select,
   TablePagination,
-  Paper
+  Paper,
+  Autocomplete
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -76,6 +77,11 @@ function SKUManagement() {
   const [selectedSku, setSelectedSku] = useState(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [warehouses, setWarehouses] = useState([]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
 
   // Sort options
   const sortOptions = [
@@ -90,6 +96,9 @@ function SKUManagement() {
 
   useEffect(() => {
     fetchSKUs();
+    fetchWarehouses();
+    fetchSuppliers();
+    fetchCategories();
   }, [page, rowsPerPage, filters, sortBy, sortOrder]);
 
   // This is a mock function that would normally fetch data from the API
@@ -128,6 +137,33 @@ function SKUManagement() {
     } catch (err) {
       setError('Failed to load SKUs. Please try again later.');
       setLoading(false);
+    }
+  };
+
+  const fetchWarehouses = async () => {
+    try {
+      const res = await axios.get('/api/warehouses');
+      setWarehouses(res.data.warehouses || []);
+    } catch (err) {
+      setWarehouses([]);
+    }
+  };
+
+  const fetchSuppliers = async () => {
+    try {
+      const res = await axios.get('/api/suppliers');
+      setSuppliers(res.data.suppliers || []);
+    } catch (err) {
+      setSuppliers([]);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get('/api/categories');
+      setCategories(res.data.categories || []);
+    } catch (err) {
+      setCategories([]);
     }
   };
 
@@ -511,6 +547,10 @@ function SKUManagement() {
         filters={filters}
         onApply={handleFilterApply}
         onReset={handleFilterReset}
+        warehouses={warehouses}
+        suppliers={suppliers}
+        categories={categories}
+        onCreateCategory={() => setCategoryDialogOpen(true)}
       />
 
       {/* Delete Confirmation Dialog */}
@@ -566,6 +606,41 @@ function SKUManagement() {
           <ListItemText primary="Delete" primaryTypographyProps={{ color: 'error' }} />
         </MenuItem>
       </Menu>
+
+      {/* Add Category Dialog */}
+      <Dialog open={categoryDialogOpen} onClose={() => setCategoryDialogOpen(false)}>
+        <DialogTitle>Add New Category</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Category Name"
+            fullWidth
+            value={newCategory}
+            onChange={e => setNewCategory(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCategoryDialogOpen(false)}>Cancel</Button>
+          <Button
+            onClick={async () => {
+              try {
+                await axios.post('/api/categories', { name: newCategory });
+                setCategoryDialogOpen(false);
+                setNewCategory('');
+                fetchCategories();
+                toast.success('Category created!');
+              } catch {
+                toast.error('Failed to create category');
+              }
+            }}
+            variant="contained"
+            disabled={!newCategory.trim()}
+          >
+            Create
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

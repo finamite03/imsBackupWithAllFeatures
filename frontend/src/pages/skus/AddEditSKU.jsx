@@ -123,11 +123,21 @@ function AddEditSKU() {
     onSubmit: async (values) => {
       setLoading(true);
       try {
+        let imageUrl = values.imageUrl || '';
+        if (imageFile) {
+          const formData = new FormData();
+          formData.append('image', imageFile);
+          const uploadRes = await axios.post('/api/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+          });
+          imageUrl = uploadRes.data.imageUrl;
+        }
+        const payload = { ...values, imageUrl };
         if (isEdit) {
-          await axios.put(`/api/skus/${id}`, values);
+          await axios.put(`/api/skus/${id}`, payload);
           alert('SKU updated!');
         } else {
-          await axios.post('/api/skus', values);
+          await axios.post('/api/skus', payload);
           alert('SKU created!');
         }
         navigate('/skus');

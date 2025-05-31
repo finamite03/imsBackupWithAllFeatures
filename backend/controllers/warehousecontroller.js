@@ -70,13 +70,13 @@ export const updateWarehouse = asyncHandler(async (req, res) => {
 // @route   DELETE /api/warehouses/:id
 // @access  Private
 export const deleteWarehouse = asyncHandler(async (req, res) => {
+  const warehouse = await Warehouse.findById(req.params.id);
+  if (!warehouse) {
+    res.status(404);
+    throw new Error('Warehouse not found');
+  }
   try {
-    const warehouse = await Warehouse.findById(req.params.id);
-    if (!warehouse) {
-      res.status(404);
-      throw new Error('Warehouse not found');
-    }
-    await warehouse.remove();
+    await warehouse.deleteOne();
     res.json({ message: 'Warehouse removed' });
   } catch (error) {
     console.error('Delete warehouse error:', error);
