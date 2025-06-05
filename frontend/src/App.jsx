@@ -32,7 +32,6 @@ import SalesOrder from './pages/sales/SalesOrder';
 import Invoice from './pages/sales/Invoice';
 import SalesDebitNote from './pages/sales/SalesDebitNote';
 import Customers from './pages/customers/Customers';
-import AdminPanel from './pages/admin/AdminPanel';
 import SalesDashboard from './pages/sales/SalesDashboard';
 import PurchaseDashboard from './pages/purchase/PurchaseDashboard';
 import Dispatch from './pages/sales/Dispatch';
@@ -97,7 +96,7 @@ function App() {
         <Route path="purchase/po" element={<PO />} />
         <Route path="purchase/credit-debit-note" element={<CreditDebitNote />} />
         {/* Sales Workflow */}
-        
+
           <Route path="/sales/dashboard" element={<SalesDashboard />} />
           <Route path="/sales/orders" element={<SalesOrder />} />
           <Route path="/sales/dispatch" element={<Dispatch />} />
@@ -107,7 +106,6 @@ function App() {
           <Route path="/purchase/dashboard" element={<PurchaseDashboard />} />
         {/* Customer Management */}
         <Route path="customers" element={<Customers />} />
-        {/* Admin Panel */}
       </Route>
 
       {/* 404 Fallback */}

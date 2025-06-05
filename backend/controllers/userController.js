@@ -17,7 +17,6 @@ export const authUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role,
       token: generateToken(user._id),
     });
   } else {
@@ -30,7 +29,7 @@ export const authUser = asyncHandler(async (req, res) => {
 // @route   POST /api/users/register
 // @access  Public
 export const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
 
   // Check if user already exists
   const userExists = await User.findOne({ email });
@@ -45,7 +44,6 @@ export const registerUser = asyncHandler(async (req, res) => {
     name,
     email,
     password,
-    role: role || 'user', // Default to 'user' if role not specified
   });
 
   if (user) {
@@ -53,7 +51,6 @@ export const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role,
       token: generateToken(user._id),
     });
   } else {
@@ -73,7 +70,6 @@ export const getUserProfile = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role,
     });
   } else {
     res.status(404);
@@ -90,7 +86,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    
+
     // Only update password if provided
     if (req.body.password) {
       user.password = req.body.password;
@@ -102,7 +98,6 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      role: updatedUser.role,
       token: generateToken(updatedUser._id),
     });
   } else {
@@ -157,7 +152,6 @@ export const updateUser = asyncHandler(async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
-    user.role = req.body.role || user.role;
 
     const updatedUser = await user.save();
 
@@ -165,7 +159,6 @@ export const updateUser = asyncHandler(async (req, res) => {
       _id: updatedUser._id,
       name: updatedUser.name,
       email: updatedUser.email,
-      role: updatedUser.role,
     });
   } else {
     res.status(404);
