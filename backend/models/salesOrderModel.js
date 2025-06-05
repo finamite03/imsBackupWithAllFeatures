@@ -71,9 +71,37 @@ const salesOrderSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['draft', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
-    default: 'draft'
+    enum: ['draft', 'confirmed', 'pending_dispatch', 'dispatched', 'delivered', 'cancelled', 'returned'],
+    default: 'pending_dispatch'
   },
+  dispatchStatus: {
+    type: String,
+    enum: ['pending', 'partial', 'completed'],
+    default: 'pending'
+  },
+  dispatchedItems: [{
+    sku: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'SKU'
+    },
+    quantity: {
+      type: Number,
+      default: 0
+    },
+    dispatchedAt: {
+      type: Date
+    }
+  }],
+  allocatedStock: [{
+    sku: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'SKU'
+    },
+    quantity: {
+      type: Number,
+      default: 0
+    }
+  }],
   notes: {
     type: String
   },

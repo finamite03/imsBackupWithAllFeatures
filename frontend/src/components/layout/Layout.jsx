@@ -76,6 +76,7 @@ const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Purchase', icon: <TransactionsIcon />,
     children: [
+      { text: 'Purchase Dashboard', path: '/purchase/dashboard' },
       { text: 'Indent', path: '/purchase/indent' },
       { text: 'Indent Approval', path: '/purchase/indent-approval' },
       { text: 'PO', path: '/purchase/po' },
@@ -84,6 +85,7 @@ const menuItems = [
   },
   { text: 'Sales', icon: <PersonIcon />,
     children: [
+      { text: 'Sales Dashboard', path: '/sales/dashboard' },
       { text: 'Sales Order', path: '/sales/order' },
       { text: 'Invoice', path: '/sales/invoice' },
       { text: 'Debit Note', path: '/sales/debit-note' },

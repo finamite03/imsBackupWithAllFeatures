@@ -8,6 +8,7 @@ import {
   deleteSalesOrder,
   getSalesOrderStats
 } from '../controllers/salesOrderController.js';
+import { dispatchOrder } from '../controllers/dispatchController.js';
 import { protect, manager } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -23,5 +24,8 @@ router.route('/:id')
   .get(protect, getSalesOrderById)
   .put(protect, updateSalesOrder)
   .delete(protect, manager, deleteSalesOrder);
+
+router.route('/:id/dispatch')
+  .put(protect, dispatchOrder);
 
 export default router;

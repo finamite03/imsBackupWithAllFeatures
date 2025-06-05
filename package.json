@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A comprehensive inventory management system with MongoDB, Express, React, and Node.js",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node backend/server.js",
     "server": "nodemon backend/server.js",
