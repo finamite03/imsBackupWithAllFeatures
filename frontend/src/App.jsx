@@ -24,6 +24,14 @@ import SkuVendorMapping from './pages/vendors/SkuVendorMapping';
 import Reports from './pages/reports/Reports';
 import WarehouseDetail from './pages/warehouses/WarehouseDetail';
 import SupplierDetail from './pages/suppliers/SupplierDetail';
+import Indent from './pages/purchase/Indent';
+import IndentApproval from './pages/purchase/IndentApproval';
+import PO from './pages/purchase/PO';
+import CreditDebitNote from './pages/purchase/CreditDebitNote';
+import SalesOrder from './pages/sales/SalesOrder';
+import Invoice from './pages/sales/Invoice';
+import SalesDebitNote from './pages/sales/SalesDebitNote';
+import Customers from './pages/customers/Customers';
 
 // Context
 import { useAuth } from './context/AuthContext';
@@ -76,6 +84,17 @@ function App() {
         <Route path="reports" element={<Reports />} />
         <Route path="/warehouses/:id" element={<WarehouseDetail />} />
         <Route path="/suppliers/:id" element={<SupplierDetail />} />
+        {/* Purchase Workflow */}
+        <Route path="purchase/indent" element={<Indent />} />
+        <Route path="purchase/indent-approval" element={<IndentApproval />} />
+        <Route path="purchase/po" element={<PO />} />
+        <Route path="purchase/credit-debit-note" element={<CreditDebitNote />} />
+        {/* Sales Workflow */}
+        <Route path="sales/order" element={<SalesOrder />} />
+        <Route path="sales/invoice" element={<Invoice />} />
+        <Route path="sales/debit-note" element={<SalesDebitNote />} />
+        {/* Customer Management */}
+        <Route path="customers" element={<Customers />} />
       </Route>
       
       {/* 404 Fallback */}

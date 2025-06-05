@@ -74,6 +74,21 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { text: 'Purchase', icon: <TransactionsIcon />,
+    children: [
+      { text: 'Indent', path: '/purchase/indent' },
+      { text: 'Indent Approval', path: '/purchase/indent-approval' },
+      { text: 'PO', path: '/purchase/po' },
+      { text: 'Credit/Debit Note', path: '/purchase/credit-debit-note' },
+    ]
+  },
+  { text: 'Sales', icon: <PersonIcon />,
+    children: [
+      { text: 'Sales Order', path: '/sales/order' },
+      { text: 'Invoice', path: '/sales/invoice' },
+      { text: 'Debit Note', path: '/sales/debit-note' },
+    ]
+  },
   { text: 'SKU Management', icon: <InventoryIcon />, path: '/skus' },
   { text: 'Transactions', icon: <TransactionsIcon />, path: '/transactions' },
   { text: 'Stock Adjustments', icon: <AdjustmentsIcon />, path: '/stock-adjustments' },
@@ -81,6 +96,7 @@ const menuItems = [
   { text: 'Warehouses', icon: <WarehouseIcon />, path: '/warehouses' },
   { text: 'SKU-Vendor Mapping', icon: <MappingIcon />, path: '/sku-vendor-mapping' },
   { text: 'Reports', icon: <ReportsIcon />, path: '/reports' },
+  { text: 'Customers', icon: <PersonIcon />, path: '/customers' },
 ];
 
 function Layout() {
@@ -88,6 +104,7 @@ function Layout() {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [open, setOpen] = useState(!isMobile);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openMenus, setOpenMenus] = useState({});
   const { currentUser, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -248,9 +265,46 @@ function Layout() {
         <Divider />
         <List>
           {menuItems.map((item) => {
-            const isActive = location.pathname === item.path || 
-                             (item.path !== '/' && location.pathname.startsWith(item.path));
-            
+            if (item.children) {
+              const isParentActive = item.children.some(child => location.pathname.startsWith(child.path));
+              return (
+                <Box key={item.text}>
+                  <ListItem disablePadding>
+                    <ListItemButton
+                      onClick={() => setOpenMenus(prev => ({ ...prev, [item.text]: !prev[item.text] }))}
+                      sx={{
+                        py: 1.2,
+                        position: 'relative',
+                        bgcolor: isParentActive ? 'action.selected' : undefined,
+                      }}
+                    >
+                      <ListItemIcon sx={{ color: isParentActive ? 'primary.main' : 'text.secondary' }}>
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: isParentActive ? 600 : 400 }} />
+                    </ListItemButton>
+                  </ListItem>
+                  {openMenus[item.text] && (
+                    <List component="div" disablePadding sx={{ pl: 4 }}>
+                      {item.children.map(child => (
+                        <ListItem key={child.text} disablePadding>
+                          <ListItemButton
+                            onClick={() => navigate(child.path)}
+                            sx={{
+                              py: 1,
+                              bgcolor: location.pathname === child.path ? 'action.selected' : undefined,
+                            }}
+                          >
+                            <ListItemText primary={child.text} primaryTypographyProps={{ fontWeight: location.pathname === child.path ? 600 : 400 }} />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
+                    </List>
+                  )}
+                </Box>
+              );
+            }
+            const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
             return (
               <ListItem key={item.text} disablePadding>
                 <ListItemButton 

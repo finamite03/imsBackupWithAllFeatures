@@ -20,6 +20,9 @@ import stockAdjustmentRoutes from './routes/stockAdjustmentRoutes.js';
 import vendorMappingRoutes from './routes/vendorMappingRoutes.js';
 import reportRoutes from './routes/reportRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
+import purchaseIndentRoutes from './routes/purchaseIndentRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
+import purchaseOrderRoutes from './routes/purchaseOrderRoutes.js'; // Import PO routes
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
 // Connect to MongoDB
@@ -46,6 +49,9 @@ app.use('/api/stock-adjustments', stockAdjustmentRoutes);
 app.use('/api/vendor-mappings', vendorMappingRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/purchase-indents', purchaseIndentRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/purchase-orders', purchaseOrderRoutes); // Register PO routes
 
 // Handle production build
 if (process.env.NODE_ENV === 'production') {
