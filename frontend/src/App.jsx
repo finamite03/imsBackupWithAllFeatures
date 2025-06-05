@@ -32,9 +32,11 @@ import SalesOrder from './pages/sales/SalesOrder';
 import Invoice from './pages/sales/Invoice';
 import SalesDebitNote from './pages/sales/SalesDebitNote';
 import Customers from './pages/customers/Customers';
+import AdminPanel from './pages/admin/AdminPanel';
 
 // Context
 import { useAuth } from './context/AuthContext';
+import { AlertProvider } from './context/AlertContext';
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
@@ -57,7 +59,8 @@ function App() {
   }
 
   return (
-    <Routes>
+    <AlertProvider>
+      <Routes>
       {/* Public Routes */}
       <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" />} />
       <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" />} />
@@ -95,11 +98,14 @@ function App() {
         <Route path="sales/debit-note" element={<SalesDebitNote />} />
         {/* Customer Management */}
         <Route path="customers" element={<Customers />} />
+        {/* Admin Panel */}
+        <Route path="admin" element={<AdminPanel />} />
       </Route>
       
       {/* 404 Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </AlertProvider>
   );
 }
 

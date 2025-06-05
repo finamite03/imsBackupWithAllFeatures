@@ -129,30 +129,30 @@ function Layout() {
 
   const getBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
-    
+
     if (pathnames.length === 0) {
       return [{ name: 'Dashboard', path: '/' }];
     }
-    
+
     const breadcrumbs = [{ name: 'Dashboard', path: '/' }];
-    
+
     let currentPath = '';
     pathnames.forEach((value, index) => {
       currentPath += `/${value}`;
-      
+
       // Format the breadcrumb name
       let name = value.charAt(0).toUpperCase() + value.slice(1);
       name = name.replace(/-/g, ' ');
-      
+
       // Handle special cases
       if (name === 'Skus') name = 'SKU Management';
       if (name === 'Edit' && index > 0) name = `Edit ${pathnames[index-1].slice(0, -1).toUpperCase()}`;
       if (name === 'Add' && index > 0) name = `Add ${pathnames[index-1].slice(0, -1).toUpperCase()}`;
       if (name === 'Id') name = 'Details';
-      
+
       breadcrumbs.push({ name, path: currentPath });
     });
-    
+
     return breadcrumbs;
   };
 

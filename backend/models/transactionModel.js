@@ -75,6 +75,11 @@ const transactionSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    referenceType: {
+      type: String,
+      enum: ['PurchaseOrder', 'SalesOrder', 'StockAdjustment', 'Invoice', 'SalesDebitNote'],
+      required: true
+    },
   },
   {
     timestamps: true,

@@ -54,3 +54,36 @@ export const manager = (req, res, next) => {
     throw new Error('Not authorized as a manager');
   }
 };
+
+// Role-based access control
+export const hasPermission = (requiredRoles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      res.status(401);
+      throw new Error('Not authenticated');
+    }
+
+    const userRole = req.user.role;
+    
+    // Admin has access to everything
+    if (userRole === 'admin') {
+      return next();
+    }
+
+    // Check if user role is in required roles
+    if (requiredRoles.includes(userRole)) {
+      return next();
+    }
+
+    res.status(403);
+    throw new Error(`Access denied. Required role(s): ${requiredRoles.join(', ')}`);
+  };
+};
+
+// Check specific permissions
+export const canManageUsers = hasPermission(['admin']);
+export const canManageInventory = hasPermission(['admin', 'manager']);
+export const canViewReports = hasPermission(['admin', 'manager']);
+export const canManageSales = hasPermission(['admin', 'manager']);
+export const canManagePurchases = hasPermission(['admin', 'manager']);
+export const canApprove = hasPermission(['admin', 'manager']);
